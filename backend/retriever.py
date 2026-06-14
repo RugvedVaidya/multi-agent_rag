@@ -1,21 +1,21 @@
 """
-retriever.py  —  Hybrid search + re-ranking
-Embeddings: local sentence-transformers (free)
+retriever.py — Hybrid search + re-ranking
+Embeddings: ChromaDB built-in (ONNX, no TensorFlow dependency)
 """
 
 import math
 import re
 from collections import Counter
-from sentence_transformers import SentenceTransformer
-
 import chromadb
+from chromadb.utils import embedding_functions
 import config
 
-_embedder = SentenceTransformer(config.EMBEDDING_MODEL)
+# Use ChromaDB's built-in ONNX embedding function — no sentence-transformers needed
+_ef = embedding_functions.DefaultEmbeddingFunction()
 
 
 def embed_query(text: str) -> list[float]:
-    return _embedder.encode([text])[0].tolist()
+    return _ef([text])[0]
 
 
 def tokenize(text: str) -> list[str]:
@@ -53,9 +53,9 @@ def retrieve(query: str, top_k=config.TOP_K_RETRIEVAL,
         include=["documents", "metadatas", "distances"],
     )
 
-    docs      = results["documents"][0]
-    metas     = results["metadatas"][0]
-    distances = results["distances"][0]
+    docs       = results["documents"][0]
+    metas      = results["metadatas"][0]
+    distances  = results["distances"][0]
     sem_scores = [1 - d for d in distances]
 
     query_tokens = tokenize(query)
@@ -65,8 +65,8 @@ def retrieve(query: str, top_k=config.TOP_K_RETRIEVAL,
     for doc, meta, sem in zip(docs, metas, sem_scores):
         if sem < config.SIMILARITY_THRESH:
             continue
-        kw      = min(bm25_score(query_tokens, doc, avg_dl) / 10.0, 1.0)
-        final   = 0.7 * sem + 0.3 * kw
+        kw    = min(bm25_score(query_tokens, doc, avg_dl) / 10.0, 1.0)
+        final = 0.7 * sem + 0.3 * kw
         candidates.append({
             "text":           doc,
             "source":         meta.get("source", ""),
