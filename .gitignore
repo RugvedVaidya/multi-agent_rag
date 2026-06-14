@@ -3,9 +3,12 @@
 
 # Vector database (re-generate by ingesting documents)
 chroma_db/
+chroma_db
 
 # Python
 __pycache__/
+__pycache__
+
 *.pyc
 *.pyo
 .Python
