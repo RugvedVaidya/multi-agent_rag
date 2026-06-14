@@ -1,20 +1,21 @@
-# Environment
+# Secrets
 .env
 
-# Vector database (re-generate by ingesting documents)
+# Vector database
 chroma_db/
-chroma_db
 
-# Python
+# Python cache
 __pycache__/
-__pycache__
-
 *.pyc
 *.pyo
+*.pyd
 .Python
-*.egg-info/
-dist/
-build/
+
+# PDF and document files
+*.pdf
+*.docx
+*.xlsx
+*.csv
 
 # OS
 .DS_Store
