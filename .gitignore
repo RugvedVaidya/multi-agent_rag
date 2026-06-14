@@ -1,0 +1,23 @@
+# Environment
+.env
+
+# Vector database (re-generate by ingesting documents)
+chroma_db/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
